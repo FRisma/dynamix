@@ -14,16 +14,16 @@ public struct CanvasParser: Parser {
     /// - Parameter data: raw data to map
     /// - Returns: If successful, a fully fledged `Canvas`
     public func parse(data: Any) throws -> Any {
-        let validator = try ParsingValidator(
-            object: ParsingValidator.object(forData: data)
-        )
+//        let validator = try ParsingValidator(
+//            object: ParsingValidator.object(forData: data)
+//        )
+//        
+//        let parsedCanvas = try Canvas(
+//            identifier: validator.get(key: .identifier),
+//            tiles: parseTiles(validator: validator)
+//        )
         
-        let parsedCanvas = try Canvas(
-            identifier: validator.get(key: .identifier),
-            tiles: parseTiles(validator: validator)
-        )
-        
-        return parsedCanvas
+        return "parsedCanvas"
     }
 }
 
