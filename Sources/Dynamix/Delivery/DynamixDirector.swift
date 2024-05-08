@@ -18,7 +18,7 @@ final class DynamixDirector {
         case viewIsReady
     }
     
-    private let stateListener: (State) -> Void
+    var stateListener: (State) -> Void
     
     init(stateListener: @escaping (State) -> Void) {
         self.stateListener = stateListener
@@ -35,6 +35,6 @@ final class DynamixDirector {
     private func requestCanvas() {
         // TODO: Make network request to fetch UI + Data
         sleep(2)
-        stateListener(.loaded)
+//        stateListener(.loaded)
     }
 }

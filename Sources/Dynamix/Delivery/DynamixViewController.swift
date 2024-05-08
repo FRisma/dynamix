@@ -18,11 +18,11 @@ public final class DynamixViewController: UIViewController {
         return collectionView
     }()
     
-    private let director = DynamixDirector()
+    private let director = DynamixDirector(stateListener: { _ in })
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        director.stateListener = { [weak self] in state
+        director.stateListener = { [weak self] state in
             self?.handleDirectorState(state)
         }
         director.handleAction(.viewIsReady)
@@ -32,8 +32,8 @@ public final class DynamixViewController: UIViewController {
         switch state {
         case .loading:
             break
-        case .loaded:
-            display(let canvas)
+        case .loaded(let canvas):
+            display(canvas)
         case .error(let error):
             handleError(error)
         }
@@ -54,5 +54,15 @@ public final class DynamixViewController: UIViewController {
     
     private func handleError(_ error: Error) {
         // TODO: Show injected error view
+    }
+}
+
+extension DynamixViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        10
+    }
+    
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        UICollectionViewCell()
     }
 }

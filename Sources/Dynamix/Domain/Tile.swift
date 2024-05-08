@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 /// A model for a visual element that appears within a `Canvas`. Subclass to add additional properties for specific use cases.
-open class Tile: Publisher {
+open class Tile/*: Publisher*/ {
     /// The type of Tile, used to help inform which subclass to use for parsing and instantiation.
     public let tileType: String
     
