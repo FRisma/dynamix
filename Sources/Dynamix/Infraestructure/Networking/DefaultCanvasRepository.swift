@@ -54,13 +54,12 @@ final class DefaultCanvasRepository: CanvasRepository {
 private extension DefaultCanvasRepository {
     func deserialize(data: Data, completion: @escaping CanvasRepositoryCompletion) {
         do {
-            let unwrappedParser = parser
             let validator = try ParsingValidator(
                 object: ParsingValidator.object(
                     forData: deserializer.deserialize(data: data)
                 )
             )
-            let canvasResponse: Canvas = try validator.parse(using: unwrappedParser)
+            let canvasResponse: Canvas = try validator.parse(using: parser)
             completion(.success(canvasResponse))
         } catch {
             completion(.failure(error))
