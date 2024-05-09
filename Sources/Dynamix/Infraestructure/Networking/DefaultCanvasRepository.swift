@@ -26,19 +26,16 @@ final class DefaultCanvasRepository: CanvasRepository {
     private let deserializer: Deserializer
     private let parser: Parser
     private let requestPath: String
-    private let tileRegister: TileParsersRegister
     
     init(
         path: String,
         service: HTTPClient,
         deserializer: Deserializer,
-        parser: Parser,
-        tileRegister: TileParsersRegister
+        parser: Parser
     ) {
         self.service = service
         self.parser = parser
         self.deserializer = deserializer
-        self.tileRegister = tileRegister
         requestPath = path
     }
     
@@ -57,7 +54,7 @@ final class DefaultCanvasRepository: CanvasRepository {
 private extension DefaultCanvasRepository {
     func deserialize(data: Data, completion: @escaping CanvasRepositoryCompletion) {
         do {
-            let unwrappedParser = CanvasParser(tileRegister: tileRegister)
+            let unwrappedParser = parser
             let validator = try ParsingValidator(
                 object: ParsingValidator.object(
                     forData: deserializer.deserialize(data: data)
