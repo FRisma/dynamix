@@ -8,6 +8,14 @@
 import Foundation
 
 public struct CanvasParser: Parser {
+    private let tileRegister: TileParsersRegister
+    
+    /// Initializes the Parser.
+    /// - Parameter tileRegister: Defined supported tiles
+    init(tileRegister: TileParsersRegister) {
+        self.tileRegister = tileRegister
+    }
+    
     // MARK: - Parser
     
     /// Maps the provided data into a defined Canvas
@@ -24,6 +32,19 @@ public struct CanvasParser: Parser {
         )
         
         return parsedCanvas
+    }
+    
+    private func parseTiles(validator: ParsingValidator) throws -> [Tile] {
+        let tilesJson: [JSON] = try validator.get(key: .tiles)
+        let tiles: [Tile] = tilesJson.compactMap {
+            do {
+                return try tileRegister.initTileFrom(json: $0)
+            } catch {
+                print(error)
+                return nil
+            }
+        }
+        return tiles
     }
 }
 

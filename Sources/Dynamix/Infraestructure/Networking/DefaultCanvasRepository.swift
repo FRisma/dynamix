@@ -26,14 +26,14 @@ final class DefaultCanvasRepository: CanvasRepository {
     private let deserializer: Deserializer
     private let parser: Parser
     private let requestPath: String
-    private let tileRegister: TileRegister
+    private let tileRegister: TileParsersRegister
     
     init(
         path: String,
         service: HTTPClient,
         deserializer: Deserializer,
         parser: Parser,
-        tileRegister: TileRegister
+        tileRegister: TileParsersRegister
     ) {
         self.service = service
         self.parser = parser
