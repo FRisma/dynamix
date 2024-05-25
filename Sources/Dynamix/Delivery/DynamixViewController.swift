@@ -14,17 +14,7 @@ protocol DynamixViewControllerFactory {
 public final class DynamixViewController: UIViewController {
     typealias Dependencies = DynamixDirectorFactory
     
-    private lazy var collectionView: UICollectionView = {
-        let flowLayout = UICollectionViewFlowLayout()
-        
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        return collectionView
-    }()
-    
-//    private(set) var containerCollectionViewController
+    private(set) var containerCollectionViewController: ContainerCollectionViewController?
     
     private let director: DynamixDirector
     
@@ -62,12 +52,20 @@ public final class DynamixViewController: UIViewController {
             return
         }
         
-        canvas.tiles.forEach { tile in
-            print("FRISMA registering cell type \(tile.tileConfiguration.cellType)")
-            collectionView.register(tile.tileConfiguration.cellType, forCellWithReuseIdentifier: "cellId")
-        }
+        let containerCollectionView = ContainerCollectionViewController(canvas: canvas, layout: UICollectionViewFlowLayout())
         
-        collectionView.reloadData()
+        add(containerCollectionView, frame: view.frame)
+        
+//        self.addChild(containerCollectionView)
+//        containerCollectionView.view.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(containerCollectionView.view)
+//        NSLayoutConstraint.activate([
+//            containerCollectionView.view.topAnchor.constraint(equalTo: view.topAnchor),
+//            containerCollectionView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            containerCollectionView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            containerCollectionView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+//        ])
+//        containerCollectionView.didMove(toParent: self)
     }
     
     private func showEmptyState() {
@@ -77,22 +75,27 @@ public final class DynamixViewController: UIViewController {
     private func handleError(_ error: Error) {
         // TODO: Show injected error view
     }
+    
+    private func showLoading() {
+        // TODO: Show Loading
+    }
 }
 
-extension DynamixViewController: UICollectionViewDataSource, UICollectionViewDelegate {
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        10
+@nonobjc extension UIViewController {
+    func add(_ child: UIViewController, frame: CGRect? = nil) {
+        addChild(child)
+
+        if let frame = frame {
+            child.view.frame = frame
+        }
+
+        view.addSubview(child.view)
+        child.didMove(toParent: self)
     }
-    
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath)
-        cell.contentView.backgroundColor = [
-            UIColor.red,
-            UIColor.green,
-            UIColor.blue,
-            UIColor.lightGray,
-            UIColor.systemBrown,
-        ].randomElement()
-        return cell
+
+    func remove() {
+        willMove(toParent: nil)
+        view.removeFromSuperview()
+        removeFromParent()
     }
 }
