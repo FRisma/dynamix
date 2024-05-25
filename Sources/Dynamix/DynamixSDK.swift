@@ -1,35 +1,18 @@
 import UIKit
 
 public enum DynamixSDK {
-    public static func makeDynamixViewController() -> UIViewController {
-        let tilesParser = DefaultTileParsersRegister()
-        tilesParser.register(type: "earnings_rewards", parser: EarningsRewardsTileParser())
-        tilesParser.register(type: "earnings_card", parser: EarningsCardTileParser())
+    public static func makeDynamixViewController(
+        endpoint: String
+    ) -> UIViewController {
         
-        let repository = DefaultCanvasRepository(
-            path: "/api/testing",
-            service: FakeHTTPClient(),
-            deserializer: JSONDeserializer(),
-            parser: CanvasParser(tileRegister: tilesParser)
-        )
+        let dc = DependencyContainer()
+        let vc = dc.makeMainViewController()
         
-        repository.request { result in
-            switch result {
-            case .success(let canvas):
-                print("Success")
-                // TODO: Here create a UIViewController
-            case .failure(let error):
-                print("Error \(error)")
-            }
-        }
-        
-        let viewController = UIViewController()
-        viewController.view.backgroundColor = .blue
-        return viewController
+        return vc
     }
 }
 
-private struct EarningsRewardsTileParser: Parser {
+struct EarningsRewardsTileParser: Parser {
     func parse(data: Any) throws -> Any {
         let jsonData = try JSONSerialization.data(withJSONObject: ParsingValidator.object(forData: data))
         let decoder = JSONDecoder()
@@ -75,7 +58,7 @@ private struct EarningsRewardsTileParser: Parser {
     }
 }
 
-private struct EarningsCardTileParser: Parser {
+struct EarningsCardTileParser: Parser {
     func parse(data: Any) throws -> Any {
         let jsonData = try JSONSerialization.data(withJSONObject: ParsingValidator.object(forData: data))
         let decoder = JSONDecoder()

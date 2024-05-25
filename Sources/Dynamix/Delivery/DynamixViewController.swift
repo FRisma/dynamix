@@ -7,7 +7,13 @@
 
 import UIKit
 
+protocol DynamixViewControllerFactory {
+    func makeMainViewController() -> DynamixViewController
+}
+
 public final class DynamixViewController: UIViewController {
+    typealias Dependencies = DynamixDirectorFactory
+    
     private lazy var collectionView: UICollectionView = {
         let flowLayout = UICollectionViewFlowLayout()
         
@@ -18,7 +24,18 @@ public final class DynamixViewController: UIViewController {
         return collectionView
     }()
     
-    private let director = DynamixDirector(stateListener: { _ in })
+//    private(set) var containerCollectionViewController
+    
+    private let director: DynamixDirector
+    
+    init(dependencies: Dependencies) {
+        self.director = dependencies.makeDirector()
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
@@ -45,6 +62,11 @@ public final class DynamixViewController: UIViewController {
             return
         }
         
+        canvas.tiles.forEach { tile in
+            print("FRISMA registering cell type \(tile.tileConfiguration.cellType)")
+            collectionView.register(tile.tileConfiguration.cellType, forCellWithReuseIdentifier: "cellId")
+        }
+        
         collectionView.reloadData()
     }
     
@@ -63,6 +85,14 @@ extension DynamixViewController: UICollectionViewDataSource, UICollectionViewDel
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        UICollectionViewCell()
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cellId", for: indexPath)
+        cell.contentView.backgroundColor = [
+            UIColor.red,
+            UIColor.green,
+            UIColor.blue,
+            UIColor.lightGray,
+            UIColor.systemBrown,
+        ].randomElement()
+        return cell
     }
 }

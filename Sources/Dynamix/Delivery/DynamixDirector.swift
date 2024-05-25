@@ -7,6 +7,10 @@
 
 import Foundation
 
+protocol DynamixDirectorFactory {
+    func makeDirector() -> DynamixDirector
+}
+
 final class DynamixDirector {
     enum State {
         case loading
@@ -18,9 +22,13 @@ final class DynamixDirector {
         case viewIsReady
     }
     
+    typealias Dependencies = CanvasRepositoryProvider
+    private let dependencies: Dependencies
+    
     var stateListener: (State) -> Void
     
-    init(stateListener: @escaping (State) -> Void) {
+    init(dependencies: Dependencies, stateListener: @escaping (State) -> Void) {
+        self.dependencies = dependencies
         self.stateListener = stateListener
     }
     
@@ -33,8 +41,18 @@ final class DynamixDirector {
     }
     
     private func requestCanvas() {
-        // TODO: Make network request to fetch UI + Data
-        sleep(2)
-//        stateListener(.loaded)
+        dependencies.canvasRepository.request() { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let canvas):
+                handleReceivedCanvas(canvas)
+            case .failure(let error):
+                break
+            }
+        }
+    }
+        
+    private func handleReceivedCanvas(_ canvas: Canvas) {
+        stateListener(.loaded(canvas))
     }
 }
