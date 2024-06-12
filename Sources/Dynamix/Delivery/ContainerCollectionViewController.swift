@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  ContainerCollectionViewController.swift
+//
 //
 //  Created by FRisma on 18/05/2024.
 //
@@ -21,7 +21,7 @@ final class ContainerCollectionViewController: UICollectionViewController {
         collectionView.reloadData()
     }
     
-    init(canvas: Canvas, layout: UICollectionViewLayout) {
+    init(canvas: Canvas) {
         self.canvas = canvas
         
         let customLayout = UICollectionViewFlowLayout()
@@ -30,9 +30,14 @@ final class ContainerCollectionViewController: UICollectionViewController {
         customLayout.minimumInteritemSpacing = 10
         
         super.init(collectionViewLayout: customLayout)
-        view.backgroundColor = .green
         registerCellTypes()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         view.backgroundColor = .systemBackground
+        collectionView.delegate = self
+        collectionView.dataSource = self
     }
     
     private func registerCellTypes() {
@@ -71,5 +76,11 @@ extension ContainerCollectionViewController {
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         canvas.tiles.count
+    }
+    
+    // MARK: UICollectionViewDelegateFlowLayout
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        CGSize(width: UIScreen.main.bounds.width, height: 100) // Set item size here
     }
 }

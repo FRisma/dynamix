@@ -58,7 +58,7 @@ public final class DynamixViewController: UIViewController {
             return
         }
         
-        let containerCollectionView = ContainerCollectionViewController(canvas: canvas, layout: UICollectionViewFlowLayout())
+        let containerCollectionView = ContainerCollectionViewController(canvas: canvas)
         
         add(containerCollectionView, frame: view.frame)
     }
