@@ -25,14 +25,14 @@ final class ContainerCollectionViewController: UICollectionViewController {
         self.canvas = canvas
         
         let customLayout = UICollectionViewFlowLayout()
-        customLayout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 100)  // Set the size of the cells here
+        customLayout.itemSize = CGSize(width: UIScreen.main.bounds.width, height: 300)  // Set the size of the cells here
         customLayout.minimumLineSpacing = 10  // Space between rows
         customLayout.minimumInteritemSpacing = 10
-        
         
         super.init(collectionViewLayout: customLayout)
         view.backgroundColor = .green
         registerCellTypes()
+        view.backgroundColor = .systemBackground
     }
     
     private func registerCellTypes() {

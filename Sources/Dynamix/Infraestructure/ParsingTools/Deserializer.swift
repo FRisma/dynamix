@@ -7,17 +7,17 @@
 
 import Foundation
 
+public protocol Deserializer {
+    func deserialize(data: Data) throws -> Any
+}
+
 /// An enum that represent an error trying to deserialize `Data`
 public enum DeserializeError: Error {
     /// `deserializationFailed` is used to identify when deserialization fails
     case deserializationFailed
 }
 
-public protocol Deserializer {
-    func deserialize(data: Data) throws -> Any
-}
-
-/// The `JSONDeserializer` type converts data to a JSON object.
+/// The `JSONDeserializer` type converts Data to a JSON object.
 public final class JSONDeserializer: Deserializer {
     /// Initializes a new `JSONDeserializer` object.
     public init() {}

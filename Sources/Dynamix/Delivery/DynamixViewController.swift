@@ -29,8 +29,11 @@ public final class DynamixViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         director.stateListener = { [weak self] state in
-            self?.handleDirectorState(state)
+            DispatchQueue.main.async {
+                self?.handleDirectorState(state)
+            }
         }
         director.handleAction(.viewIsReady)
     }
@@ -38,10 +41,13 @@ public final class DynamixViewController: UIViewController {
     private func handleDirectorState(_ state: DynamixDirector.State) {
         switch state {
         case .loading:
-            break
+            showLoading()
         case .loaded(let canvas):
+            hideLoading()
+            hideError()
             display(canvas)
         case .error(let error):
+            hideLoading()
             handleError(error)
         }
     }
@@ -55,17 +61,6 @@ public final class DynamixViewController: UIViewController {
         let containerCollectionView = ContainerCollectionViewController(canvas: canvas, layout: UICollectionViewFlowLayout())
         
         add(containerCollectionView, frame: view.frame)
-        
-//        self.addChild(containerCollectionView)
-//        containerCollectionView.view.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(containerCollectionView.view)
-//        NSLayoutConstraint.activate([
-//            containerCollectionView.view.topAnchor.constraint(equalTo: view.topAnchor),
-//            containerCollectionView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            containerCollectionView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            containerCollectionView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-//        ])
-//        containerCollectionView.didMove(toParent: self)
     }
     
     private func showEmptyState() {
@@ -73,15 +68,31 @@ public final class DynamixViewController: UIViewController {
     }
     
     private func handleError(_ error: Error) {
-        // TODO: Show injected error view
+        // TODO: Show injected error view if any otherwise show default one
+        let errorView = DefaultErrorView()
+        errorView.configure(message: "Oops something went wrong") { [weak self] in
+            self?.director.handleAction(.viewIsReady)
+        }
+        
+        self.view.addSubview(errorView)
+    }
+    
+    private func hideError() {
+        view.subviews.filter { $0 is DefaultErrorView }.forEach { $0.removeFromSuperview() }
     }
     
     private func showLoading() {
-        // TODO: Show Loading
+        // TODO: Show custom loading view if provided otherwise show default one
+        let loadingView = DefaultLoadingView(frame: self.view.bounds)
+        self.view.addSubview(loadingView)
+    }
+    
+    private func hideLoading() {
+        view.subviews.filter { $0 is DefaultLoadingView }.forEach { $0.removeFromSuperview() }
     }
 }
 
-@nonobjc extension UIViewController {
+private extension UIViewController {
     func add(_ child: UIViewController, frame: CGRect? = nil) {
         addChild(child)
 

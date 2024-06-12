@@ -7,19 +7,6 @@
 
 import Foundation
 
-protocol CanvasRepositoryProvider {
-    var canvasRepository: CanvasRepository { get }
-}
-
-public typealias CanvasRepositoryCompletion = (Result<Canvas, Error>) -> Void
-
-public protocol CanvasRepository {
-    /// Used to fetch the canvas from a source, like network, storage, etc.
-    /// - Parameter completion: a Canvas completion
-    /// - Returns: a token for cancelling the process
-    func request(completion: @escaping CanvasRepositoryCompletion) -> Cancellable?
-}
-
 /// Base implementation of CanvasRepository, use it to request any given canvas
 final class DefaultCanvasRepository: CanvasRepository {
     private let service: HTTPClient
@@ -39,7 +26,7 @@ final class DefaultCanvasRepository: CanvasRepository {
         requestPath = path
     }
     
-    func request(completion: @escaping CanvasRepositoryCompletion) -> Cancellable? {
+    func request(completion: @escaping CanvasRepository.RepositoryCompletion) -> Cancellable? {
         service.requestData(path: self.requestPath) { [weak self] result in
             switch result {
             case .success(let data):
@@ -52,7 +39,7 @@ final class DefaultCanvasRepository: CanvasRepository {
 }
 
 private extension DefaultCanvasRepository {
-    func deserialize(data: Data, completion: @escaping CanvasRepositoryCompletion) {
+    func deserialize(data: Data, completion: @escaping RepositoryCompletion) {
         do {
             let validator = try ParsingValidator(
                 object: ParsingValidator.object(

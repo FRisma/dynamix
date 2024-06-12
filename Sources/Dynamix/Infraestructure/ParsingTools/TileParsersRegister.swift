@@ -7,6 +7,10 @@
 
 import Foundation
 
+protocol TileParserRepositoryProvider {
+    var tileParserRepository: TileParsersRegister { get }
+}
+
 public protocol TileParsersRegister {
     /// A map of tile parsers where the key is the one defined in the Canvas API contract
     var registry: [String: Parser] { get }
