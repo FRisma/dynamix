@@ -58,9 +58,13 @@ public final class DynamixViewController: UIViewController {
             return
         }
         
-        let containerCollectionView = ContainerCollectionViewController(canvas: canvas)
-        
-        add(containerCollectionView, frame: view.frame)
+        if let containerCollectionViewController {
+            containerCollectionViewController.canvas = canvas
+        } else {
+            let containerCollectionView = ContainerCollectionViewController(canvas: canvas)
+            add(containerCollectionView, frame: view.frame)
+            containerCollectionViewController = containerCollectionView
+        }
     }
     
     private func showEmptyState() {

@@ -13,11 +13,24 @@ open class Tile {
     /// The type of Tile, used to help inform which subclass to use for parsing and instantiation.
     public let tileType: String
     
+    /// The type of cell that going to be used
+    public let cellType: UICollectionViewCell.Type
+    
+    /// The reuse identifier for collection view cells
+    public let reuseIdentifier: String
+    
     /// The cell type and configuration logic of the tile.
     public var tileConfiguration: TileConfiguration
 
-    public init(tileType: String) {
+    public init(
+        tileType: String,
+        cellType: UICollectionViewCell.Type,
+        reuseIdentifier: String
+        
+    ) {
         self.tileType = tileType
+        self.cellType = cellType
+        self.reuseIdentifier = reuseIdentifier
         tileConfiguration = TileConfiguration.emptyConfiguration
     }
     
