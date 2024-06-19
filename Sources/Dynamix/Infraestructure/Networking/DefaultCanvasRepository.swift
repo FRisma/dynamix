@@ -1,5 +1,5 @@
 //
-//  CanvasRepository.swift
+//  DefaultCanvasRepository.swift
 //
 //
 //  Created by Franco Risma on 08/05/2024.
@@ -9,29 +9,27 @@ import Foundation
 
 /// Base implementation of CanvasRepository, use it to request any given canvas
 final class DefaultCanvasRepository: CanvasRepository {
-    private let service: HTTPClient
-    private let deserializer: Deserializer
-    private let parser: Parser
-    private let requestPath: String
-    
+    private let endpoint: String
+    private let httpService: HTTPClient
+    private let deserializer: Deserializer = JSONDeserializer()
+    private let canvasParser: Parser
+
     init(
-        path: String,
-        service: HTTPClient,
-        deserializer: Deserializer,
-        parser: Parser
+        endpoint: String,
+        httpService: HTTPClient,
+        canvasParser: Parser
     ) {
-        self.service = service
-        self.parser = parser
-        self.deserializer = deserializer
-        requestPath = path
+        self.endpoint = endpoint
+        self.httpService = httpService
+        self.canvasParser = canvasParser
     }
-    
-    func request(completion: @escaping CanvasRepository.RepositoryCompletion) -> Cancellable? {
-        service.requestData(path: self.requestPath) { [weak self] result in
+
+    func request(completion: @escaping RepositoryCompletion) -> Cancellable? {
+        httpService.requestData(path: endpoint) { [weak self] result in
             switch result {
-            case .success(let data):
+            case let .success(data):
                 self?.deserialize(data: data, completion: completion)
-            case .failure(let error):
+            case let .failure(error):
                 completion(.failure(error))
             }
         }
@@ -46,7 +44,7 @@ private extension DefaultCanvasRepository {
                     forData: deserializer.deserialize(data: data)
                 )
             )
-            let canvasResponse: Canvas = try validator.parse(using: parser)
+            let canvasResponse: Canvas = try validator.parse(using: canvasParser)
             completion(.success(canvasResponse))
         } catch {
             completion(.failure(error))

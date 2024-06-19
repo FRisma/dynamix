@@ -1,37 +1,28 @@
 import UIKit
 
 public enum DynamixSDK {
-    
     public static func makeDynamixViewController(
         endpoint: String,
-        tileParsers: [String: Parser]
+        canvasParser: Parser? = nil,
+        tileParsers: [String: Parser],
+        httpClient: HTTPClient
     ) -> UIViewController {
-        let dependencyContainer = DependencyContainer()
-        tileParsers.forEach { register in
-            dependencyContainer.tileParserRepository.register(type: register.key, parser: register.value)
+        let nonOptionalCanvasParser: Parser
+        if let canvasParser {
+            nonOptionalCanvasParser = canvasParser
+        } else {
+            let tileRegister = DefaultTileParsersRegister()
+            for parser in tileParsers {
+                tileRegister.register(type: parser.key, parser: parser.value)
+            }
+            nonOptionalCanvasParser = CanvasParser(tileRegister: tileRegister)
         }
-        return  dependencyContainer.makeMainViewController()
-    }
-}
 
-public struct DynamixSDKFactory {
-    private var parsers: [String: Parser] = [:]
-    private var networkEndpoint: String = "/api/network" // Default value
-
-    public init() {}
-
-    public mutating func register(parser: Parser, tileType: String) {
-        parsers[tileType] = parser
-    }
-
-    public mutating func setNetworkEndpoint(_ endpoint: String) {
-        networkEndpoint = endpoint
-    }
-
-    public func make() -> UIViewController {
-        DynamixSDK.makeDynamixViewController(
-            endpoint: networkEndpoint,
-            tileParsers: parsers
+        let dependencyContainer = DependencyContainer(
+            httpClient: httpClient,
+            canvasParser: nonOptionalCanvasParser,
+            endpoint: endpoint
         )
+        return dependencyContainer.makeMainViewController()
     }
 }

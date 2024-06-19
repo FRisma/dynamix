@@ -22,13 +22,13 @@ final class DynamixDirector {
         case viewIsReady
     }
 
-    typealias Dependencies = CanvasRepositoryProvider
-    private let dependencies: Dependencies
+    typealias Dependencies = CanvasRepositoryFactory
+    private let canvasRepository: CanvasRepository
 
     var stateListener: (State) -> Void
 
     init(dependencies: Dependencies, stateListener: @escaping (State) -> Void) {
-        self.dependencies = dependencies
+        canvasRepository = dependencies.makeCanvasRepository()
         self.stateListener = stateListener
     }
 
@@ -41,7 +41,7 @@ final class DynamixDirector {
     }
 
     private func requestCanvas() {
-        dependencies.canvasRepository.request { [weak self] result in
+        canvasRepository.request { [weak self] result in
             guard let self else { return }
             switch result {
             case let .success(canvas):

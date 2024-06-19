@@ -7,10 +7,6 @@
 
 import Foundation
 
-public protocol ParserServiceFactory {
-    func makeParserService() -> Parser
-}
-
 /// A protocol that defines a common API for objects that parse received data and return a different value.
 public protocol Parser {
     /// Parses passed-in data into another type.

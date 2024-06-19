@@ -7,10 +7,6 @@
 
 import Foundation
 
-public protocol DeserializerServiceFactory {
-    func makeDeserializerService() -> Deserializer
-}
-
 public protocol Deserializer {
     func deserialize(data: Data) throws -> Any
 }

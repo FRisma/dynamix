@@ -1,28 +1,19 @@
 import Foundation
 
-public protocol DynamixExternalDependencies:
-    HTTPClientServiceFactory,
-    DeserializerServiceFactory,
-    ParserServiceFactory {}
-
 final class DependencyContainer {
-//    private let externalDependencies: DynamixExternalDependencies
-//
-//    init(externalDependencies: DynamixExternalDependencies) {
-//        self.externalDependencies = externalDependencies
-//    }
+    private let httpClient: HTTPClient
+    private let canvasParser: Parser
+    private let endpoint: String
 
-    lazy var canvasRepository: CanvasRepository = {
-        let repository = DefaultCanvasRepository(
-            path: "api/testing",
-            service: FakeHTTPClient(),
-            deserializer: JSONDeserializer(),
-            parser: CanvasParser(tileRegister: tileParserRepository)
-        )
-        return repository
-    }()
-
-    var tileParserRepository: TileParsersRegister = DefaultTileParsersRegister()
+    init(
+        httpClient: HTTPClient,
+        canvasParser: Parser,
+        endpoint: String
+    ) {
+        self.httpClient = httpClient
+        self.canvasParser = canvasParser
+        self.endpoint = endpoint
+    }
 }
 
 extension DependencyContainer: DynamixViewControllerFactory {
@@ -37,23 +28,12 @@ extension DependencyContainer: DynamixDirectorFactory {
     }
 }
 
-// extension DependencyContainer: HTTPClientServiceFactory {
-//    func makeHTTPClientService() -> HTTPClient {
-//        externalDependencies.makeHTTPClientService()
-//    }
-// }
-//
-// extension DependencyContainer: DeserializerServiceFactory {
-//    func makeDeserializerService() -> Deserializer {
-//        externalDependencies.makeDeserializerService()
-//    }
-// }
-//
-// extension DependencyContainer: ParserServiceFactory {
-//    func makeParserService() -> Parser {
-//        externalDependencies.makeParserService()
-//    }
-// }
-
-extension DependencyContainer: CanvasRepositoryProvider {}
-extension DependencyContainer: TileParserRepositoryProvider {}
+extension DependencyContainer: CanvasRepositoryFactory {
+    func makeCanvasRepository() -> CanvasRepository {
+        DefaultCanvasRepository(
+            endpoint: endpoint,
+            httpService: httpClient,
+            canvasParser: canvasParser
+        )
+    }
+}
