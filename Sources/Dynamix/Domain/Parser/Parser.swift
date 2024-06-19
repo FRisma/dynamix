@@ -1,11 +1,15 @@
 //
 //  Parser.swift
-//  
+//
 //
 //  Created by Franco Risma on 04/04/2024.
 //
 
 import Foundation
+
+public protocol ParserServiceFactory {
+    func makeParserService() -> Parser
+}
 
 /// A protocol that defines a common API for objects that parse received data and return a different value.
 public protocol Parser {

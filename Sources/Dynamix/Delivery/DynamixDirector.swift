@@ -1,6 +1,6 @@
 //
 //  DynamixDirector.swift
-//  
+//
 //
 //  Created by Franco Risma on 04/04/2024.
 //
@@ -17,21 +17,21 @@ final class DynamixDirector {
         case loaded(Canvas)
         case error(Error)
     }
-    
+
     enum Action {
         case viewIsReady
     }
-    
+
     typealias Dependencies = CanvasRepositoryProvider
     private let dependencies: Dependencies
-    
+
     var stateListener: (State) -> Void
-    
+
     init(dependencies: Dependencies, stateListener: @escaping (State) -> Void) {
         self.dependencies = dependencies
         self.stateListener = stateListener
     }
-    
+
     func handleAction(_ action: Action) {
         switch action {
         case .viewIsReady:
@@ -39,19 +39,19 @@ final class DynamixDirector {
             requestCanvas()
         }
     }
-    
+
     private func requestCanvas() {
-        dependencies.canvasRepository.request() { [weak self] result in
+        dependencies.canvasRepository.request { [weak self] result in
             guard let self else { return }
             switch result {
-            case .success(let canvas):
+            case let .success(canvas):
                 handleReceivedCanvas(canvas)
-            case .failure(let error):
-                break
+            case let .failure(error):
+                stateListener(.error(error))
             }
         }
     }
-        
+
     private func handleReceivedCanvas(_ canvas: Canvas) {
         stateListener(.loaded(canvas))
     }

@@ -1,6 +1,17 @@
 import Foundation
 
+public protocol DynamixExternalDependencies:
+    HTTPClientServiceFactory,
+    DeserializerServiceFactory,
+    ParserServiceFactory {}
+
 final class DependencyContainer {
+//    private let externalDependencies: DynamixExternalDependencies
+//
+//    init(externalDependencies: DynamixExternalDependencies) {
+//        self.externalDependencies = externalDependencies
+//    }
+
     lazy var canvasRepository: CanvasRepository = {
         let repository = DefaultCanvasRepository(
             path: "api/testing",
@@ -10,10 +21,8 @@ final class DependencyContainer {
         )
         return repository
     }()
-    
-    var tileParserRepository: TileParsersRegister = {
-        DefaultTileParsersRegister()
-    }()
+
+    var tileParserRepository: TileParsersRegister = DefaultTileParsersRegister()
 }
 
 extension DependencyContainer: DynamixViewControllerFactory {
@@ -27,6 +36,24 @@ extension DependencyContainer: DynamixDirectorFactory {
         DynamixDirector(dependencies: self, stateListener: { _ in })
     }
 }
+
+// extension DependencyContainer: HTTPClientServiceFactory {
+//    func makeHTTPClientService() -> HTTPClient {
+//        externalDependencies.makeHTTPClientService()
+//    }
+// }
+//
+// extension DependencyContainer: DeserializerServiceFactory {
+//    func makeDeserializerService() -> Deserializer {
+//        externalDependencies.makeDeserializerService()
+//    }
+// }
+//
+// extension DependencyContainer: ParserServiceFactory {
+//    func makeParserService() -> Parser {
+//        externalDependencies.makeParserService()
+//    }
+// }
 
 extension DependencyContainer: CanvasRepositoryProvider {}
 extension DependencyContainer: TileParserRepositoryProvider {}

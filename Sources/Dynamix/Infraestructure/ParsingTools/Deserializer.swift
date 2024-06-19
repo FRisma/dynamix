@@ -1,11 +1,15 @@
 //
 //  Deserializer.swift
-//  
+//
 //
 //  Created by Franco Risma on 08/05/2024.
 //
 
 import Foundation
+
+public protocol DeserializerServiceFactory {
+    func makeDeserializerService() -> Deserializer
+}
 
 public protocol Deserializer {
     func deserialize(data: Data) throws -> Any
@@ -21,7 +25,7 @@ public enum DeserializeError: Error {
 public final class JSONDeserializer: Deserializer {
     /// Initializes a new `JSONDeserializer` object.
     public init() {}
-    
+
     /// Deserializes data into JSON.
     ///
     /// - Parameter data: The data to deserialize.
