@@ -22,35 +22,8 @@ final class ContainerCollectionViewController: UICollectionViewController {
 
     init(canvas: Canvas) {
         self.canvas = canvas
-
-        let compositionalLayout: UICollectionViewCompositionalLayout = {
-            // Item
-            let item = NSCollectionLayoutItem(
-                layoutSize:
-                NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1),
-                    heightDimension: .estimated(100)
-                )
-            )
-
-            // Group
-            let groupSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .estimated(100)
-            )
-            let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-            group.edgeSpacing = NSCollectionLayoutEdgeSpacing(
-                leading: NSCollectionLayoutSpacing.fixed(0),
-                top: NSCollectionLayoutSpacing.fixed(8),
-                trailing: NSCollectionLayoutSpacing.fixed(0),
-                bottom: NSCollectionLayoutSpacing.fixed(8)
-            )
-
-            // Section
-            let section = NSCollectionLayoutSection(group: group)
-            return UICollectionViewCompositionalLayout(section: section)
-        }()
-
+        let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+        let compositionalLayout = UICollectionViewCompositionalLayout.list(using: configuration)
         super.init(collectionViewLayout: compositionalLayout)
 
         registerCellTypes()
