@@ -63,6 +63,9 @@ public final class DynamixViewController: UIViewController {
             containerCollectionViewController.canvas = canvas
         } else {
             let containerCollectionView = ContainerCollectionViewController(canvas: canvas)
+            containerCollectionView.onPullToRefresh = { [weak self] in
+                self?.director.handleAction(.reload)
+            }
             add(containerCollectionView, frame: view.frame)
             containerCollectionViewController = containerCollectionView
         }

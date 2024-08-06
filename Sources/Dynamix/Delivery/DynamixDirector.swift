@@ -20,6 +20,7 @@ final class DynamixDirector {
 
     enum Action {
         case viewIsReady
+        case reload
     }
 
     typealias Dependencies = CanvasRepositoryFactory
@@ -36,6 +37,9 @@ final class DynamixDirector {
         switch action {
         case .viewIsReady:
             stateListener(.loading)
+            requestCanvas()
+            
+        case .reload:
             requestCanvas()
         }
     }

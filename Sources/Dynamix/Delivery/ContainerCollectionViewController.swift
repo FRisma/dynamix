@@ -14,19 +14,27 @@ final class ContainerCollectionViewController: UICollectionViewController {
             refreshCanvas()
         }
     }
-
-    private func refreshCanvas() {
-        registerCellTypes()
-        collectionView.reloadData()
-    }
+    
+    var onPullToRefresh: (() -> Void)?
+    
+    private lazy var refControl: UIRefreshControl = {
+        let refresh = UIRefreshControl()
+        refresh.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        return refresh
+    }()
 
     init(canvas: Canvas) {
         self.canvas = canvas
         let configuration = UICollectionLayoutListConfiguration(appearance: .plain)
         let compositionalLayout = UICollectionViewCompositionalLayout.list(using: configuration)
         super.init(collectionViewLayout: compositionalLayout)
-
+        self.collectionView.refreshControl = refControl
         registerCellTypes()
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     override func viewDidLoad() {
@@ -35,6 +43,12 @@ final class ContainerCollectionViewController: UICollectionViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
     }
+    
+    private func refreshCanvas() {
+        refControl.endRefreshing()
+        registerCellTypes()
+        collectionView.reloadData()
+    }
 
     private func registerCellTypes() {
         collectionView.backgroundColor = .systemBackground
@@ -42,10 +56,10 @@ final class ContainerCollectionViewController: UICollectionViewController {
             collectionView.register(tile.cellType, forCellWithReuseIdentifier: tile.reuseIdentifier)
         }
     }
-
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    
+    @objc
+    private func didPullToRefresh() {
+        onPullToRefresh?()
     }
 }
 
