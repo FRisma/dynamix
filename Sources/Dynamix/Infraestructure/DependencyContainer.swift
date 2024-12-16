@@ -17,8 +17,10 @@ final class DependencyContainer {
 }
 
 extension DependencyContainer: DynamixViewControllerFactory {
-    func makeMainViewController() -> DynamixViewController {
-        DynamixViewController(dependencies: self)
+    func makeMainViewController(shouldHideNavBar: Bool) -> DynamixViewController {
+        let vc = DynamixViewController(dependencies: self)
+        vc.shouldHideNavBar = shouldHideNavBar
+        return vc
     }
 }
 

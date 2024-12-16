@@ -8,11 +8,12 @@
 import UIKit
 
 protocol DynamixViewControllerFactory {
-    func makeMainViewController() -> DynamixViewController
+    func makeMainViewController(shouldHideNavBar: Bool) -> DynamixViewController
 }
 
 public final class DynamixViewController: UIViewController {
     typealias Dependencies = DynamixDirectorFactory
+    var shouldHideNavBar: Bool = false
 
     private(set) var containerCollectionViewController: ContainerCollectionViewController?
 
@@ -37,6 +38,11 @@ public final class DynamixViewController: UIViewController {
             }
         }
         director.handleAction(.viewIsReady)
+    }
+
+    override public func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(shouldHideNavBar, animated: animated)
     }
 
     private func handleDirectorState(_ state: DynamixDirector.State) {

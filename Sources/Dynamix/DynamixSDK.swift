@@ -5,6 +5,7 @@ public enum DynamixSDK {
         endpoint: String,
         canvasParser: Parser? = nil,
         tileParsers: [String: Parser],
+        showNavigationBar: Bool = true,
         httpClient: HTTPClient
     ) -> UIViewController {
         let nonOptionalCanvasParser: Parser
@@ -23,6 +24,6 @@ public enum DynamixSDK {
             canvasParser: nonOptionalCanvasParser,
             endpoint: endpoint
         )
-        return dependencyContainer.makeMainViewController()
+        return dependencyContainer.makeMainViewController(shouldHideNavBar: !showNavigationBar)
     }
 }
